@@ -1,0 +1,52 @@
+---
+kind: pipeline
+name: terraform-aws-network-security
+
+platform:
+  os: linux
+
+environment: {}
+
+volumes:
+  - name: cache
+    temp: {}
+
+steps:
+
+  - name:  cache-load
+    image: meltwater/drone-cache:dev
+    pull:  true
+    settings:
+      backend:        filesystem
+      restore:        true
+      cache_key:      volume
+      archive_format: gzip
+      mount:
+        - .terraform/      
+    volumes:
+      - name: cache
+        path: /tmp/cache
+
+  - name:  terraform
+    image: hashicorp/terraform
+    pull:  true
+    commands:
+      - pwd
+      - terraform init
+      - terraform validate
+      - terraform test
+
+  - name:  cache-save
+    image: meltwater/drone-cache:dev
+    pull:  true
+    settings:
+      backend:        filesystem
+      rebuild:        true
+      cache_key:      volume
+      archive_format: gzip
+      mount:
+        - .terraform/
+    volumes:
+      - name: cache
+        path: /tmp/cache
+
