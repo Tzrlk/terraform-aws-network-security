@@ -15,14 +15,6 @@ terraform {
 # endregion ####################################################################
 
 # region Input Variables #######################################################
-variable "VpcId" {
-	description = "The VPC to set the security groups up in if not overridden."
-	type        = string
-	validation {
-		error_message = "Value must be a valid VPC id."
-		condition     = length(regexall("^vpc-([\\da-f]{8}|[\\da-d]{17})$", var.VpcId)) == 0
-	}
-}
 variable "CidrBlocks" {
 	description = "Named CIDR address blocks to incorporate into rules."
 	type        = map(string)
@@ -35,34 +27,24 @@ variable "CidrBlocks" {
 		]) == 0
 	}
 }
-variable "SecurityGroupsExisting" {
+variable "SecurityGroupIds" {
 	description = "Security groups that already exist and should be integrated."
 	type        = map(string)
 	validation {
 		error_message = "All entries must be valid Security Group ids."
 		condition     = length([
-			for name, cidr in var.SecurityGroupsExisting :
+			for name, cidr in var.SecurityGroupIds :
 				format("%s: %s", name, cidr)
 				if length(regexall("^sg-([\\da-f]{8}|[\\da-f]{17})$", cidr)) < 1
 		]) == 0
 	}
 }
-variable "SecurityGroupsNew" {
-	description = "Security groups to create before setting the rules up."
-	type        = map(object({
-		Name        = string
-		Description = string
-		VpcId       = optional(string)
-		Tags        = optional(map(string))
-	}))
-	# TODO: complex validation, including desc/name regexes.
-}
 variable "PortRanges" {
 	description = "Definitions for all the port ranges used in this config."
 	type        = map(object({
-		Proto = string
+		Proto = optional(string)
 		Min   = number
-		Max   = number
+		Max   = optional(number)
 		Tags  = optional(map(string))
 	}))
 	# TODO: complex validation.
@@ -73,12 +55,28 @@ variable "Rules" {
 }
 # endregion ####################################################################
 
+# region Data ##################################################################
+data "aws_security_group" "Groups" {
+	for_each = var.SecurityGroupIds
+
+	id = each.value
+}
+# endregion ####################################################################
+
 # region Output Values #########################################################
-output "SecurityGroupsCreated" {
-	description = "Ids of all the security groups created."
+output "Rules" {
+	description = "Ids of all the created rules."
 	value       = {
-		for key in keys(var.SecurityGroupsNew) :
-			key => aws_security_group.Group[key].id
+		for key in keys(var.SecurityGroupIds) :
+			key => [
+				for rule in aws_security_group_rule.GroupNewEgress:
+					rule.id
+					if rule.security_group_id == key
+			] + [
+				for rule in aws_security_group_rule.GroupNewIngress:
+					rule.id
+					if rule.security_group_id == key
+			]
 	}
 }
 # endregion ####################################################################

@@ -17,29 +17,29 @@ locals {
 
 # region Group to Group ########################################################
 locals {
-	RuleListGroupsNew = {
+	RuleListGroups = {
 		for Rule in local.RuleListFull :
 			Rule["Name"] => Rule
-			if can(var.SecurityGroupsNew[Rule["Subject"]])
-			&& can(var.SecurityGroupsNew[Rule["object"]])
+			if can(var.SecurityGroupIds[Rule["Subject"]])
+			&& can(var.SecurityGroupIds[Rule["object"]])
 	}
 }
-resource "aws_security_group_rule" "GroupNewEgress" {
-	for_each = local.RuleListGroupsNew
+resource "aws_security_group_rule" "GroupEgress" {
+	for_each = local.RuleListGroups
 
 	type                     = "egress"
-	security_group_id        = aws_security_group.Group[each.value["Subject"]]
-	source_security_group_id = aws_security_group.Group[each.value["Object"]]
+	security_group_id        = data.aws_security_group.Groups[each.value["Subject"]]
+	source_security_group_id = data.aws_security_group.Groups[each.value["Object"]]
 	from_port                = each.value["Min"]
 	to_port                  = each.value["Max"]
 	protocol                 = each.value["Proto"]
 }
-resource "aws_security_group_rule" "GroupNewIngress" {
-	for_each = local.RuleListGroupsNew
+resource "aws_security_group_rule" "GroupIngress" {
+	for_each = local.RuleListGroups
 
 	type                     = "ingress"
-	security_group_id        = aws_security_group.Group[each.value["Object"]]
-	source_security_group_id = aws_security_group.Group[each.value["Subject"]]
+	security_group_id        = data.aws_security_group.Groups[each.value["Object"]]
+	source_security_group_id = data.aws_security_group.Groups[each.value["Subject"]]
 	from_port                = each.value["Min"]
 	to_port                  = each.value["Max"]
 	protocol                 = each.value["Proto"]
@@ -47,5 +47,36 @@ resource "aws_security_group_rule" "GroupNewIngress" {
 			each.value["Proto"],
 			each.value["Object"],
 			each.value["Subject"])
+}
+# endregion ####################################################################
+
+# region Group -> CIDR, CIDR -> Group ##########################################
+resource "aws_security_group_rule" "CidrEgress" {
+	for_each = {
+		for Rule in local.RuleListFull :
+			Rule["Name"] => Rule
+			if can(var.CidrBlocks[Rule["Object"]])
+	}
+
+	type              = "egress"
+	security_group_id = data.aws_security_group.Groups[each.value["Subject"]]
+	cidr_block        = var.CidrBlocks[each.value["Object"]]
+	from_port         = each.value["Min"]
+	to_port           = each.value["Max"]
+	protocol          = each.value["Proto"]
+}
+resource "aws_security_group_rule" "CidrEgress" {
+	for_each = {
+		for Rule in local.RuleListFull :
+			Rule["Name"] => Rule
+			if can(var.CidrBlocks[Rule["Subject"]])
+	}
+
+	type              = "egress"
+	security_group_id = data.aws_security_group.Groups[each.value["Object"]]
+	cidr_block        = var.CidrBlocks[each.value["Subject"]]
+	from_port         = each.value["Min"]
+	to_port           = each.value["Max"]
+	protocol          = each.value["Proto"]
 }
 # endregion ####################################################################

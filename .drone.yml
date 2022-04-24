@@ -28,13 +28,49 @@ steps:
         path: /tmp/cache
 
   - name:  terraform
-    image: hashicorp/terraform
+    image: hashicorp/terraform:latest
     pull:  true
     commands:
       - pwd
       - terraform init
       - terraform validate
       - terraform test
+
+  - name:  document
+    image: cytopia/terraform-docs:latest
+    pull:  true
+    commands:
+      - >-
+        terraform-docs asciidoc table .
+        --output-file terraform.adoc
+        --output-mode replace
+
+  - name:  release
+    image: ???/gh-api:latest
+    pull:  true
+    when:
+      branch:
+        - release/*
+    commands:
+    - >-
+      curl
+      --request POST
+      --user ${gh_user}:${gh_token}
+      --url https://api.github.com/repos/tzrlk/terraform-aws-network-security/git/refs
+      --data "$(
+        jq '{ "ref": "refs/tags/${version}", "sha": "${commit}" }'
+          --arg version "$(
+            grep -oe '[^/]+$' <<<"${DRONE_COMMIT_BRANCH}"
+          )"
+          --arg commit "${DRONE_COMMIT}"
+      )"
+#          --header 'Accept: application/vnd.github.v3+json'
+    - >-
+      curl
+      --request DELETE
+      --user ${gh_user}:${gh_token}
+      --url https://api.github.com/repos/tzrlk/terraform-aws-network-security/git/refs/${branch}
+#          --header 'Accept: application/vnd.github.v3+json'
 
   - name:  cache-save
     image: meltwater/drone-cache:dev
