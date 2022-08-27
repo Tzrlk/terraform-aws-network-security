@@ -60,21 +60,21 @@ resource "aws_security_group_rule" "CidrEgress" {
 
 	type              = "egress"
 	security_group_id = data.aws_security_group.Groups[each.value["Subject"]]
-	cidr_block        = var.CidrBlocks[each.value["Object"]]
+	cidr_blocks       = var.CidrBlocks[each.value["Object"]]
 	from_port         = each.value["Min"]
 	to_port           = each.value["Max"]
 	protocol          = each.value["Proto"]
 }
-resource "aws_security_group_rule" "CidrEgress" {
+resource "aws_security_group_rule" "CidrIngress" {
 	for_each = {
 		for Rule in local.RuleListFull :
 			Rule["Name"] => Rule
 			if can(var.CidrBlocks[Rule["Subject"]])
 	}
 
-	type              = "egress"
+	type              = "ingress"
 	security_group_id = data.aws_security_group.Groups[each.value["Object"]]
-	cidr_block        = var.CidrBlocks[each.value["Subject"]]
+	cidr_blocks       = var.CidrBlocks[each.value["Subject"]]
 	from_port         = each.value["Min"]
 	to_port           = each.value["Max"]
 	protocol          = each.value["Proto"]

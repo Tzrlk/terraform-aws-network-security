@@ -67,16 +67,19 @@ data "aws_security_group" "Groups" {
 output "Rules" {
 	description = "Ids of all the created rules."
 	value       = {
-		for key in keys(var.SecurityGroupIds) :
-			key => [
-				for rule in aws_security_group_rule.GroupNewEgress:
-					rule.id
-					if rule.security_group_id == key
-			] + [
-				for rule in aws_security_group_rule.GroupNewIngress:
-					rule.id
-					if rule.security_group_id == key
-			]
+		for key in keys(var.SecurityGroupIds) : key => [
+			for rule in aws_security_group_rule.GroupEgress: rule.id
+				if rule.security_group_id == key
+		] + [
+			for rule in aws_security_group_rule.GroupIngress: rule.id
+				if rule.security_group_id == key
+		] + [
+			for rule in aws_security_group_rule.CidrEgress: rule.id
+				if rule.security_group_id == key
+		] + [
+			for rule in aws_security_group_rule.CidrIngress: rule.id
+				if rule.security_group_id == key
+		]
 	}
 }
 # endregion ####################################################################
