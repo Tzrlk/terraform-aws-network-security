@@ -1,0 +1,14 @@
+---
+formatter: asciidoc
+
+header-from: _main.tf
+
+output:
+  file: terraform.adoc
+  mode: replace
+  template: |-
+    {{ .Content }}
+
+settings:
+  hide-empty: true
+  indent:     3

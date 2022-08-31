@@ -18,6 +18,9 @@ terraform {
 variable "CidrBlocks" {
 	description = "Named CIDR address blocks to incorporate into rules."
 	type        = map(string)
+	default     = {
+		Anywhere = "0.0.0.0/0"
+	}
 	validation {
 		error_message = "All entries must be valid CIDR definitions."
 		condition     = length([

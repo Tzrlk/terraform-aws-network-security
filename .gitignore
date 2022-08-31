@@ -1,8 +1,13 @@
 *.log
 
+# Make
+*.done
+
 # Terraform
 .terraform/
 .terraform.lock.hcl
+junit.xml
+terraform.adoc
 
 # IntelliJ
 .idea/

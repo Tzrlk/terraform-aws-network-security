@@ -7,9 +7,13 @@ insert_final_newline     = true
 trim_trailing_whitespace = true
 indent_style             = tab
 
+ij_continuation_indent_size = 4
+
 [*.{ya,y}ml]
 indent_style = space
 indent_size  = 2
+
+ij_continuation_indent_size = 2
 
 [*.{ascii,a}doc]
 trim_trailing_whitespace = false

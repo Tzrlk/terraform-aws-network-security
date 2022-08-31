@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+
+  terraform:
+    image: hashicorp/terraform:1.2.8
+    depends_on: [ localstack ]
+    working_dir: /app
+    volumes:
+      - '.:/app'
+
+  terraform-docs:
+    image: quay.io/terraform-docs/terraform-docs:0.16.0
+    working_dir: /app
+    volumes:
+      - '.:/app'
+
+  localstack:
+    image: localstack/localstack:1.0.4
