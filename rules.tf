@@ -28,8 +28,8 @@ resource "aws_security_group_rule" "GroupEgress" {
 	for_each = local.RuleListGroups
 
 	type                     = "egress"
-	security_group_id        = data.aws_security_group.Groups[each.value["Subject"]]
-	source_security_group_id = data.aws_security_group.Groups[each.value["Object"]]
+	security_group_id        = data.aws_security_group.Groups[each.value["Subject"]].id
+	source_security_group_id = data.aws_security_group.Groups[each.value["Object"]].id
 	from_port                = each.value["Min"]
 	to_port                  = each.value["Max"]
 	protocol                 = each.value["Proto"]
@@ -38,8 +38,8 @@ resource "aws_security_group_rule" "GroupIngress" {
 	for_each = local.RuleListGroups
 
 	type                     = "ingress"
-	security_group_id        = data.aws_security_group.Groups[each.value["Object"]]
-	source_security_group_id = data.aws_security_group.Groups[each.value["Subject"]]
+	security_group_id        = data.aws_security_group.Groups[each.value["Object"]].id
+	source_security_group_id = data.aws_security_group.Groups[each.value["Subject"]].id
 	from_port                = each.value["Min"]
 	to_port                  = each.value["Max"]
 	protocol                 = each.value["Proto"]
@@ -59,8 +59,8 @@ resource "aws_security_group_rule" "CidrEgress" {
 	}
 
 	type              = "egress"
-	security_group_id = data.aws_security_group.Groups[each.value["Subject"]]
-	cidr_blocks       = var.CidrBlocks[each.value["Object"]]
+	security_group_id = data.aws_security_group.Groups[each.value["Subject"]].id
+	cidr_blocks       = [ var.CidrBlocks[each.value["Object"]] ]
 	from_port         = each.value["Min"]
 	to_port           = each.value["Max"]
 	protocol          = each.value["Proto"]
@@ -73,8 +73,8 @@ resource "aws_security_group_rule" "CidrIngress" {
 	}
 
 	type              = "ingress"
-	security_group_id = data.aws_security_group.Groups[each.value["Object"]]
-	cidr_blocks       = var.CidrBlocks[each.value["Subject"]]
+	security_group_id = data.aws_security_group.Groups[each.value["Object"]].id
+	cidr_blocks       = [ var.CidrBlocks[each.value["Subject"]] ]
 	from_port         = each.value["Min"]
 	to_port           = each.value["Max"]
 	protocol          = each.value["Proto"]

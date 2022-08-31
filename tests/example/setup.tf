@@ -1,6 +1,6 @@
 
 resource "aws_security_group" "Group" {
-	for_each = [ "Albs", "Apps", "Data" ]
+	for_each = toset([ "Albs", "Apps", "Data" ])
 }
 
 module "NetSec" {
