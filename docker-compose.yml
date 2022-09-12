@@ -15,5 +15,12 @@ services:
     volumes:
       - '.:/app'
 
+  asciidoctor:
+    image: asciidoctor/docker-asciidoctor:1.30.0
+    entrypoint: asciidoctor
+    working_dir: /app
+    volumes:
+      - '.:/app'
+
   localstack:
     image: localstack/localstack:1.0.4

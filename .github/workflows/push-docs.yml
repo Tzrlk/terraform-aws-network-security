@@ -1,0 +1,28 @@
+name: Push Docs
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+jobs:
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: terraform
+        run:  make docs
+
+      - name: asciidoc
+        run:  make site
+
+      - name: site
+        run:  tsunematsu21/actions-publish-gh-pages@v1.0.2
+        with:
+          dir:    pages
+          branch: gh-pages
+          token:  ${{ secrets.GITHUB_TOKEN }}
+

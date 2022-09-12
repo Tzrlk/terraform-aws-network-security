@@ -1,5 +1,12 @@
 #!/usr/bin/env make
 
+.PHONY: \
+	init \
+	validate \
+	test \
+	docs \
+	site
+
 CMD_COMPOSE ?= docker compose
 
 #: Initialise the terraform workspace.
@@ -43,3 +50,17 @@ terraform.adoc: \
 		--output-mode replace \
 		--hide-empty \
 		.
+
+site: pages/index.html
+pages/index.html: \
+		README.adoc \
+		terraform.adoc \
+		docker-compose.yml
+	${CMD_COMPOSE} run \
+	asciidoctor \
+		--backend xhtml5 \
+		--out-file index.html \
+		--destination-dir $(dir ${@}) \
+		--safe \
+		${<}
+

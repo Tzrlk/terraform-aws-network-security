@@ -1,19 +1,22 @@
-name: Push Analysis
-on:   [ push, workflow_dispatch ]
+name: Push Tests
+on:
+  push:              {}
+  workflow_dispatch: {}
 jobs:
 
-  validate:
+  units:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v3
 
+      - name: init
+        run:  make init
+
       - name: validate
-        run:  terraform validate
+        run:  make validate
 
       - name: test
-        run:  terraform test
+        run:  make test
 
-      - name: plan
-        run:  terraform plan
