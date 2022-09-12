@@ -4,8 +4,7 @@ resource "aws_security_group" "Group" {
 }
 
 module "NetSec" {
-	source  = "../.." # "tzrlk/network-security/aws"
-	# version = "{mod_ver}"
+	source  = "../.."
 
 	SecurityGroupIds = {
 		Albs = aws_security_group.Group["Albs"].id # Public-facing load balancers.
@@ -53,3 +52,4 @@ module "NetSec" {
 output "NetSecAlbRules" {
 	value = [ for Rule in module.NetSec.Rules["Albs"] : Rule["Id"] ]
 }
+

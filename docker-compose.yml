@@ -6,6 +6,8 @@ services:
     image: hashicorp/terraform:1.2.8
     depends_on: [ localstack ]
     working_dir: /app
+    environment:
+      TF_LOG: ${TF_LOG:-info}
     volumes:
       - '.:/app'
 
@@ -24,3 +26,7 @@ services:
 
   localstack:
     image: localstack/localstack:1.0.4
+    environment:
+      DEBUG:               '1'
+      TEST_AWS_ACCOUNT_ID: '000000000000'
+

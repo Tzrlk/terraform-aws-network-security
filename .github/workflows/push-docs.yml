@@ -20,7 +20,7 @@ jobs:
         run:  make site
 
       - name: site
-        run:  tsunematsu21/actions-publish-gh-pages@v1.0.2
+        uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
         with:
           dir:    pages
           branch: gh-pages
