@@ -3,12 +3,18 @@
 NACLs less painful.
 :toc:
 :toc-placement!:
+
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
 :important-caption: :heavy_exclamation_mark:
 :caution-caption: :fire:
 :warning-caption: :warning:
+endif::[]
+
+ifndef::env-github[]
+:rendered-site: https://tzrlk.github.io/terraform-aws-network-security/
+{rendered-site}[Rendered Docs]
 endif::[]
 
 {description}
@@ -27,26 +33,28 @@ the names you gave them earlier. Finally, the module flattens this config and
 builds the network security rules from it.
 
 === Example
-The following example hopefully shows how easy setting up the rules becomes
-when you're focusing on the intent. 
 
-:mod_ver: > 0
+ifndef::env-github[]
+Examples are present in the `tests/` folder, and one is detailed in the
+{rendered-site}[rendered version of the docs].
+endif::[]
+ifdef::env-github[]
+
+The following example hopefully shows how easy setting up the rules becomes
+when you're focusing on the intent.
+
 [source,terraform]
 ----
 include::tests/example/setup.tf[]
 ----
 
-ifeval::["{mod_ver}" != "> 0"]
 == Terraform Docs
-include::terraform.adoc[opts=optional]
+include::terraform.adoc[]
+
 endif::[]
 
 == Potential Future Work
 
 * Security Group creation.
-* Support for NACLs.
-* Subnet creation? (Probably a different module)
-* Proto should have option of both, and default to tcp.
-* Max port should default to min.
 * Output graphviz of rules.
 

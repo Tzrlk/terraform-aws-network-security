@@ -68,7 +68,7 @@ resource "aws_security_group_rule" "CidrEgress" {
 	from_port         = each.value["Min"]
 	to_port           = coalesce(each.value["Max"], each.value["Min"])
 	protocol          = coalesce(each.value["Proto"], "tcp")
-	description              = format("%s traffic from %s to %s",
+	description       = format("%s traffic from %s to %s",
 			coalesce(each.value["Proto"], "tcp"),
 			each.value["Object"],
 			each.value["Subject"])
