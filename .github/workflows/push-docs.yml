@@ -1,13 +1,15 @@
 name: Push Docs
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch: {}
+permissions:
+  contents: write
 jobs:
 
   docs:
-    runs-on: ubuntu-latest
+    runs-on:     ubuntu-latest
+    concurrency: ci-${{ github.ref }}
     steps:
 
       - name: checkout
@@ -20,9 +22,6 @@ jobs:
         run:  make site
 
       - name: site
-        uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          dir:    pages
-          branch: gh-pages
-          token:  ${{ secrets.GITHUB_TOKEN }}
-
+          folder: pages
