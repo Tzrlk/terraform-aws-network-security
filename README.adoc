@@ -4,7 +4,7 @@ NACLs less painful.
 :toc:
 :toc-placement!:
 
-ifdef::env-github[]
+ifndef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
 :important-caption: :heavy_exclamation_mark:
@@ -12,7 +12,7 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-ifndef::env-github[]
+ifdef::env-github[]
 :rendered-site: https://tzrlk.github.io/terraform-aws-network-security/
 {rendered-site}[Rendered Docs]
 endif::[]
@@ -34,11 +34,11 @@ builds the network security rules from it.
 
 === Example
 
-ifndef::env-github[]
+ifdef::env-github[]
 Examples are present in the `tests/` folder, and one is detailed in the
 {rendered-site}[rendered version of the docs].
 endif::[]
-ifdef::env-github[]
+ifndef::env-github[]
 
 The following example hopefully shows how easy setting up the rules becomes
 when you're focusing on the intent.
